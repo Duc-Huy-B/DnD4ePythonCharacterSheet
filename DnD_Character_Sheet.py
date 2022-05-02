@@ -60,48 +60,50 @@ other = ""
 
 def generateSheet(name):
     #allocation
+    #name, race, class
     char_name = name
     char_race = random.choice(races)
     char_class = random.choice(classes)
+
     stats = { 
-            "Str" : ability_scores.pop(random.randrange(len(ability_scores))),
-            "Const" : ability_scores.pop(random.randrange(len(ability_scores))),
-            "Dex" : ability_scores.pop(random.randrange(len(ability_scores))),
-            "Int" : ability_scores.pop(random.randrange(len(ability_scores))),
-            "Wis" : ability_scores.pop(random.randrange(len(ability_scores))),
-            "Cha" : ability_scores.pop(random.randrange(len(ability_scores))),
-        }#unknown empty range randrange() error
+        "Str" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Const" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Dex" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Int" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Wis" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Cha" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+    }
 
     #racial bonuses
     #TODO: add racial Feats & racial powers
     if char_race == "Deva":
-        stats["Int"] += 2
-        stats["Wis"] += 2   
-        skills["History"][0] += 2
-        skills["Religion"][0] += 2
-        languages_known = ["Common", languages.pop(random.randrange(len(languages[1:]))), languages.pop(random.randrange(len(languages[1:])))]
-        speed = 6
+            stats["Int"] += 2
+            stats["Wis"] += 2   
+            skills["History"][0] += 2
+            skills["Religion"][0] += 2
+            languages_known = ["Common", languages.pop(random.randrange(len(languages[1:]))), languages.pop(random.randrange(len(languages[1:])))]
+            speed = 6
     elif char_race == "Dragonborn":
-        stats["Str"] += 2
-        stats["Cha"] += 2
-        skills["History"][0] += 2
-        skills["Intimidate"][0] += 2
-        languages_known = ["Common", "Draconic"]
-        speed = 6
+            stats["Str"] += 2
+            stats["Cha"] += 2
+            skills["History"][0] += 2
+            skills["Intimidate"][0] += 2
+            languages_known = ["Common", "Draconic"]
+            speed = 6
     elif char_race == "Dwarf":
-        stats["Const"] += 2
-        stats["Wis"] += 2
-        skills["Dungeoneering"][0] += 2
-        skills["Endurance"][0] += 2
-        languages_known = ["Common", "Dwarven"]
-        speed = 6
+            stats["Const"] += 2
+            stats["Wis"] += 2
+            skills["Dungeoneering"][0] += 2
+            skills["Endurance"][0] += 2
+            languages_known = ["Common", "Dwarven"]
+            speed = 6
     elif char_race == "Eladrin":
-        stats["Dex"] += 2
-        stats["Int"] += 2
-        skills["Arcana"][0] += 2
-        skills["History"][0] += 2
-        languages_known = ["Common", "Elven"]
-        speed = 6
+            stats["Dex"] += 2
+            stats["Int"] += 2
+            skills["Arcana"][0] += 2
+            skills["History"][0] += 2
+            languages_known = ["Common", "Elven"]
+            speed = 6
     elif char_race == "Half-Elf":
         stats["Const"] += 2
         stats["Cha"] += 2
@@ -198,6 +200,8 @@ def generateSheet(name):
         languages_known = ["Common", "Elven"]
         speed = 6
 
+
+    #generate Abilities Modifiers
     #get ability mod from stat number, input is a String
     def mod_getter(stat):
         ability = stats.get(stat)
@@ -218,414 +222,415 @@ def generateSheet(name):
     #class bonuses
     #TODO: add class feat option
     if char_class == "Avenger":
-        skills["Religion"][2] = True
-        available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Perception", "Stealth", "Streetwise"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 7 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 10 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)    
-        weapon = random.choice(weapon_list)
-        armor = "Cloth"    
-        other = "Holy Symbol"
-    elif char_class == "Paladin":
-        skills["Religion"][2] = True
-        available_skills = ["Diplomacy", "Endurance", "Heal", "History", "Insight", "Intimidate"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 15 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 10 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale", "Plate"]
-        shield_list = ["Light Shield", "Heavy Shield"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        if simple_onehand == weapon_list or mili_onehand == weapon_list:
-            other = ["Holy Symbol", random.choice(shield_list)]        
-        else: 
-            other = "Holy Symbol"
-    elif char_class == "Cleric":
-        skills["Religion"][2] = True
-        available_skills = ["Arcana", "Diplomacy", "Heal", "History", "Insight"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = "Holy Symbol"
-    elif char_class == "Invoker":
-        skills["Religion"][2] = True
-        available_skills = ["Arcana", "Diplomacy", "Endurance", "History", "Insight", "Intimidate"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 10 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
-        implement_list = ["Rod", "Staff"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = random.choice(implement_list)
-    elif char_class == "Ardent":
-        available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate", "Streetwise"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = ""
-    elif char_class == "Fighter":
-        available_skills = ["Athletics", "Endurance", "Heal", "Intimidate", "Streetwise"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 2
-        maxHP = 15 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 9 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range, mili_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]
-        shield_list = ["Light Shield", "Heavy Shield"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        if simple_onehand == weapon_list or mili_onehand == weapon_list:
-            other = random.choice(shield_list)
-        else: 
-            other = ""
-    elif char_class == "Warlord":
-        available_skills = ["Athletics", "Diplomacy", "Endurance", "Heal", "History", "Intimidate"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)    
-        if simple_onehand == weapon_list or mili_onehand == weapon_list:
-            other = "Light Shield"
-        else: 
-            other = ""
-    elif char_class == "Ranger":
-        main_skills = ["Dungeoneering", "Nature"]
-        available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Perception", "Stealth"]
-        sub_skills = [random.choice(main_skills), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Reflex"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range, mili_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = ""
-    elif char_class == "Rogue":
-        skills["Stealth"][2] = True
-        skills["Thievery"][2] = True
-        available_skills = ["Acrobatics", "Athletics", "Bluff", "Dungeoneering", "Insight", "Intimidate", "Perception", "Streetwise"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Reflex"] += 2
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_list = ["Dagger", "Hand Crossbow", "Shuriken", "Sling", "Shortsword"]
-        armor_list = ["Cloth", "Leather"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = ""
-    elif char_class == "Barbarian":
-        available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Nature", "Perception"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 2
-        maxHP = 15 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 8 + stat_mods["Const.mod"] 
-        weapon_group = [simple_twohand, mili_twohand]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = ""
-    elif char_class == "Druid":
-        skills["Nature"][2] = True
-        available_skills = ["Arcana", "Athletics", "Diplomacy", "Endurance", "Heal", "History", "Insight", "Perception"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide"]
-        implement_list = ["Staff", "Totem"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = random.choice(implement_list)
-    elif char_class == "Shaman":
-        skills["Nature"][2] = True
-        available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Perception", "Religion"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, "Longspear"]
-        if weapon_group == simple_onehand:
-            weapon_list = random.choice(weapon_group) 
+            skills["Religion"][2] = True
+            available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Perception", "Stealth", "Streetwise"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Reflex"] += 1
+            defenses["Will"] += 1
+            maxHP = 7 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 10 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)    
             weapon = random.choice(weapon_list)
-        else: 
-            weapon = "Longspear"    
-        armor_list = ["Cloth", "Leather"]   
-        armor = random.choice(armor_list)
-        other = "Totem"
+            armor = "Cloth"    
+            other = "Holy Symbol"
+    elif char_class == "Paladin":
+            skills["Religion"][2] = True
+            available_skills = ["Diplomacy", "Endurance", "Heal", "History", "Insight", "Intimidate"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Reflex"] += 1
+            defenses["Will"] += 1
+            maxHP = 15 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 10 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale", "Plate"]
+            shield_list = ["Light Shield", "Heavy Shield"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            if simple_onehand == weapon_list or mili_onehand == weapon_list:
+                other = ["Holy Symbol", random.choice(shield_list)]        
+            else: 
+                other = "Holy Symbol"
+    elif char_class == "Cleric":
+            skills["Religion"][2] = True
+            available_skills = ["Arcana", "Diplomacy", "Heal", "History", "Insight"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Will"] += 2
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 7 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = "Holy Symbol"
+    elif char_class == "Invoker":
+            skills["Religion"][2] = True
+            available_skills = ["Arcana", "Diplomacy", "Endurance", "History", "Insight", "Intimidate"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Reflex"] += 1
+            defenses["Will"] += 1
+            maxHP = 10 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 6 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
+            implement_list = ["Rod", "Staff"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = random.choice(implement_list)
+    elif char_class == "Ardent":
+            available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate", "Streetwise"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Will"] += 1
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 7 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = ""
+    elif char_class == "Fighter":
+            available_skills = ["Athletics", "Endurance", "Heal", "Intimidate", "Streetwise"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 2
+            maxHP = 15 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 9 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range, mili_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]
+            shield_list = ["Light Shield", "Heavy Shield"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            if simple_onehand == weapon_list or mili_onehand == weapon_list:
+                other = random.choice(shield_list)
+            else: 
+                other = ""
+    elif char_class == "Warlord":
+            available_skills = ["Athletics", "Diplomacy", "Endurance", "Heal", "History", "Intimidate"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Will"] += 1
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 7 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)    
+            if simple_onehand == weapon_list or mili_onehand == weapon_list:
+                other = "Light Shield"
+            else: 
+                other = ""
+    elif char_class == "Ranger":
+            main_skills = ["Dungeoneering", "Nature"]
+            available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Perception", "Stealth"]
+            sub_skills = [random.choice(main_skills), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Reflex"] += 1
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 6 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range, mili_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = ""
+    elif char_class == "Rogue":
+            skills["Stealth"][2] = True
+            skills["Thievery"][2] = True
+            available_skills = ["Acrobatics", "Athletics", "Bluff", "Dungeoneering", "Insight", "Intimidate", "Perception", "Streetwise"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Reflex"] += 2
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 6 + stat_mods["Const.mod"] 
+            weapon_list = ["Dagger", "Hand Crossbow", "Shuriken", "Sling", "Shortsword"]
+            armor_list = ["Cloth", "Leather"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = ""
+    elif char_class == "Barbarian":
+            available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Nature", "Perception"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 2
+            maxHP = 15 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 8 + stat_mods["Const.mod"] 
+            weapon_group = [simple_twohand, mili_twohand]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = ""
+    elif char_class == "Druid":
+            skills["Nature"][2] = True
+            available_skills = ["Arcana", "Athletics", "Diplomacy", "Endurance", "Heal", "History", "Insight", "Perception"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Reflex"] += 1
+            defenses["Will"] += 1
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 7 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, simple_range]
+            weapon_list = random.choice(weapon_group)
+            armor_list = ["Cloth", "Leather", "Hide"]
+            implement_list = ["Staff", "Totem"]
+            weapon = random.choice(weapon_list)
+            armor = random.choice(armor_list)
+            other = random.choice(implement_list)
+    elif char_class == "Shaman":
+            skills["Nature"][2] = True
+            available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Perception", "Religion"]
+            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+            for x in sub_skills:
+                skills[x][2] = True
+            defenses["Fortitude"] += 1
+            defenses["Will"] += 1
+            maxHP = 12 + stats["Const"]
+            bloodied_value = math.floor(maxHP/2)
+            surge_value = math.floor(bloodied_value/2)
+            surge_day = 7 + stat_mods["Const.mod"] 
+            weapon_group = [simple_onehand, "Longspear"]
+            if weapon_group == simple_onehand:
+                weapon_list = random.choice(weapon_group) 
+                weapon = random.choice(weapon_list)
+            else: 
+                weapon = "Longspear"    
+            armor_list = ["Cloth", "Leather"]   
+            armor = random.choice(armor_list)
+            other = "Totem"
     elif char_class == "Warden":
-        skills["Nature"][2] = True
-        available_skills = ["Athletics", "Dungeoneering", "Endurance", "Heal", "Intimidate", "Perception"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Will"] += 1
-        maxHP = 17 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 9 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, mili_onehand]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide"]
-        shield_list = ["Light Shield", "Heavy Shield"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = random.choice(shield_list)
+           skills["Nature"][2] = True
+           available_skills = ["Athletics", "Dungeoneering", "Endurance", "Heal", "Intimidate", "Perception"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Fortitude"] += 1
+           defenses["Will"] += 1
+           maxHP = 17 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 9 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, mili_onehand]
+           weapon_list = random.choice(weapon_group)
+           armor_list = ["Cloth", "Leather", "Hide"]
+           shield_list = ["Light Shield", "Heavy Shield"]
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           other = random.choice(shield_list)
     elif char_class == "Bard":
-        skills["Arcana"][2] = True
-        available_skills = ["Acrobatics", "Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Heal", "History", "Insight", "Intimidation", "Nature", "Perception", "Religion", "Streetwise"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"]     
-        weapon_group = [simple_onehand, "Longsword", "Scimitar", "Shortsword", simple_range, mili_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
-        shield_list = "Light Shield"
-        implement_list = "Wand"
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        if simple_range == weapon_list or mili_range == weapon_list:
-            other = implement_list
-        else:
-            other = [implement_list, shield_list]
+           skills["Arcana"][2] = True
+           available_skills = ["Acrobatics", "Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Heal", "History", "Insight", "Intimidation", "Nature", "Perception", "Religion", "Streetwise"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Reflex"] += 1
+           defenses["Will"] += 1
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 7 + stat_mods["Const.mod"]     
+           weapon_group = [simple_onehand, "Longsword", "Scimitar", "Shortsword", simple_range, mili_range]
+           weapon_list = random.choice(weapon_group)
+           armor_list = ["Cloth", "Leather", "Hide", "Chainmail"]
+           shield_list = "Light Shield"
+           implement_list = "Wand"
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           if simple_range == weapon_list or mili_range == weapon_list:
+               other = implement_list
+           else:
+               other = [implement_list, shield_list]
     elif char_class == "Warlock":
-        available_skills = ["Arcana", "Bluff", "History", "Insight", "Intimidate", "Religion", "Streetwise", "Thievery"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"]     
-        weapon_list = simple_onehand
-        armor_list = ["Cloth", "Leather"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        implement_list = ["Rod", "Wand"]
-        other = random.choice(implement_list)
+           available_skills = ["Arcana", "Bluff", "History", "Insight", "Intimidate", "Religion", "Streetwise", "Thievery"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Reflex"] += 1
+           defenses["Will"] += 1
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 6 + stat_mods["Const.mod"]     
+           weapon_list = simple_onehand
+           armor_list = ["Cloth", "Leather"]
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           implement_list = ["Rod", "Wand"]
+           other = random.choice(implement_list)
     elif char_class == "Wizard":
-        skills["Arcana"][2] = True
-        available_skills = ["Diplomacy", "Dungeoneering", "History", "Insight", "Nature", "Religion"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 10 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_list = ["Dagger", "Quarterstaff"]
-        weapon = random.choice(weapon_list)
-        armor = "Cloth"
-        implement_list = ["Orb", "Staff", "Wand"]
-        other = random.choice(implement_list)
+           skills["Arcana"][2] = True
+           available_skills = ["Diplomacy", "Dungeoneering", "History", "Insight", "Nature", "Religion"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Will"] += 2
+           maxHP = 10 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 6 + stat_mods["Const.mod"] 
+           weapon_list = ["Dagger", "Quarterstaff"]
+           weapon = random.choice(weapon_list)
+           armor = "Cloth"
+           implement_list = ["Orb", "Staff", "Wand"]
+           other = random.choice(implement_list)
     elif char_class == "Sorcerer":
-        skills["Arcana"][2] = True
-        available_skills = ["Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Endurance", "History", "Insight", "Intimidate", "Nature"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        implement_list = ["Dagger", "Staff"]
-        weapon = random.choice(weapon_list)
-        armor = "Cloth"
-        other = random.choice(implement_list)
+           skills["Arcana"][2] = True
+           available_skills = ["Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Endurance", "History", "Insight", "Intimidate", "Nature"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Will"] += 2
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 6 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, simple_range]
+           weapon_list = random.choice(weapon_group)
+           implement_list = ["Dagger", "Staff"]
+           weapon = random.choice(weapon_list)
+           armor = "Cloth"
+           other = random.choice(implement_list)
     elif char_class == "Monk":
-        available_skills = ["Acrobatics", "Athletics", "Diplomacy", "Endurance", "Heal", "Insight", "Perception", "Religion", "Stealth", "Thievery"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Fortitude"] += 1
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_list = ["Club", "Dagger", "Unarmed", "Quarterstaff", "Shuriken", "Sling", "Spear"]
-        weapon = random.choice(weapon_list)
-        armor = "Cloth"
-        other = "Ki Focus"
+           available_skills = ["Acrobatics", "Athletics", "Diplomacy", "Endurance", "Heal", "Insight", "Perception", "Religion", "Stealth", "Thievery"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Fortitude"] += 1
+           defenses["Reflex"] += 1
+           defenses["Will"] += 1
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 7 + stat_mods["Const.mod"] 
+           weapon_list = ["Club", "Dagger", "Unarmed", "Quarterstaff", "Shuriken", "Sling", "Spear"]
+           weapon = random.choice(weapon_list)
+           armor = "Cloth"
+           other = "Ki Focus"
     elif char_class == "Battlemind":    
-        available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 15 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 9 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]
-        shield_list = ["Light Shield", "Heavy Shield"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        if simple_onehand == weapon_list or mili_onehand == weapon_list:
-            other = random.choice(shield_list)
-        else: 
-            other = ""
+           available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Will"] += 2
+           maxHP = 15 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 9 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, simple_twohand, mili_onehand, mili_twohand, simple_range]
+           weapon_list = random.choice(weapon_group)
+           armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]
+           shield_list = ["Light Shield", "Heavy Shield"]
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           if simple_onehand == weapon_list or mili_onehand == weapon_list:
+               other = random.choice(shield_list)
+           else: 
+               other = ""
     elif char_class == "Psion":
-        available_skills = ["Arcana", "Bluff", "Diplomacy", "Dungeoneering", "History", "Insight", "Intimidate", "Perception"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 6 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        implement_list = ["Orb", "Staff"]
-        weapon = random.choice(weapon_list)
-        armor = "Cloth"
-        other = random.choice(implement_list)
+           available_skills = ["Arcana", "Bluff", "Diplomacy", "Dungeoneering", "History", "Insight", "Intimidate", "Perception"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Will"] += 2
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 6 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, simple_range]
+           weapon_list = random.choice(weapon_group)
+           implement_list = ["Orb", "Staff"]
+           weapon = random.choice(weapon_list)
+           armor = "Cloth"
+           other = random.choice(implement_list)
     elif char_class == "Runepriest":
-        skills["Religion"][2] = True
-        available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Thievery"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True
-        defenses["Will"] += 2
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, simple_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]    
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        if simple_onehand == weapon_list:
-            other = "Light Shield"
-        else: 
-            other = ""
+           skills["Religion"][2] = True
+           available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Thievery"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True
+           defenses["Will"] += 2
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 7 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, simple_twohand, simple_range]
+           weapon_list = random.choice(weapon_group)
+           armor_list = ["Cloth", "Leather", "Hide", "Chainmail", "Scale"]    
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           if simple_onehand == weapon_list:
+               other = "Light Shield"
+           else: 
+               other = ""
     elif char_class == "Seeker":
-        skills["Nature"][2] = True
-        available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Insight", "Intimidate", "Perception", "Stealth"]
-        sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
-        for x in sub_skills:
-            skills[x][2] = True    
-        defenses["Reflex"] += 1
-        defenses["Will"] += 1
-        maxHP = 12 + stats["Const"]
-        bloodied_value = math.floor(maxHP/2)
-        surge_value = math.floor(bloodied_value/2)
-        surge_day = 7 + stat_mods["Const.mod"] 
-        weapon_group = [simple_onehand, simple_twohand, simple_range, mili_range]
-        weapon_list = random.choice(weapon_group)
-        armor_list = ["Cloth", "Leather"]
-        weapon = random.choice(weapon_list)
-        armor = random.choice(armor_list)
-        other = ""
-    
+           skills["Nature"][2] = True
+           available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Insight", "Intimidate", "Perception", "Stealth"]
+           sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
+           for x in sub_skills:
+               skills[x][2] = True    
+           defenses["Reflex"] += 1
+           defenses["Will"] += 1
+           maxHP = 12 + stats["Const"]
+           bloodied_value = math.floor(maxHP/2)
+           surge_value = math.floor(bloodied_value/2)
+           surge_day = 7 + stat_mods["Const.mod"] 
+           weapon_group = [simple_onehand, simple_twohand, simple_range, mili_range]
+           weapon_list = random.choice(weapon_group)
+           armor_list = ["Cloth", "Leather"]
+           weapon = random.choice(weapon_list)
+           armor = random.choice(armor_list)
+           other = ""
+
+    #generates Defense Values
     #alters defenses according to armor types, other benefits, and mods
     if armor == "Cloth":
         defenses["AC"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
@@ -658,6 +663,7 @@ def generateSheet(name):
     defenses["Reflex"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
     defenses["Will"] += max(stat_mods["Wis.mod"], stat_mods["Cha.mod"])
 
+    #generate Skill Bonuses
     #skill mod setter, input is a String - the name of the Skill
     def mod_skills(skill):
         if skills[skill][2] == True:
@@ -677,81 +683,117 @@ def generateSheet(name):
     for x in skills:
         mod_skills(x)
 
-    #OUTPUT
-    #outputList = (
-    sheetOutput = (
-        "Basic Information------------------------------------------",
-        char_name, char_race,  char_class,
-        "Speed : ", speed,
-        "Ability Scores----------------------------------------------",
-        stats,
-        "Ability Modifiers--------------------",
-        stat_mods,
-        "Defenses----------------------------------------------------",
-        defenses,
-        "Health------------------------------------------------------",
-        "Max HP : ", maxHP,
-        "Bloodied value : " , bloodied_value,
-        "Surge value : " , surge_value,
-        "Surges per day : " , surge_day,
-        "Skills------------------------------------------------------",
-        skills,
-        "Languages---------------------------------------------------",
-        languages_known,
-        "Items-------------------------------------------------------",
-        weapon, armor, other
+    #OUTPUT optmization
+    character_abilities = ""
+    for x in stats:
+        character_abilities += " - " + x + ": " + str(stats[x]) + "\n"
+    character_modifiers = ""
+    for x in stat_mods:
+        character_modifiers += " - " + x + ": +" + str(stat_mods[x]) + "\n"
+    character_defenses = ""
+    for x in defenses:
+        character_defenses += " - " + x + ": " + str(defenses[x]) + "\n"
+    character_skills = ""
+    for x in skills:
+        character_skills += " - " + x + ": " + str(skills[x]) + "\n"
+
+    sheetOutput = str(
+        "Basic Information------------------------------------------\n" +
+        "  -  " + char_name + "  -  " + char_race + "  -  " + char_class + "\n" +
+        " Speed : " + str(speed) + "\n"  +
+        "Ability Scores----------------------------------------------\n" +
+        character_abilities +
+        "Ability Modifiers--------------------\n" +
+        character_modifiers +
+        "Defenses----------------------------------------------------\n" +
+        character_defenses +
+        "Health------------------------------------------------------\n" +
+        " Max HP : " + str(maxHP) + "\n" +
+        " Bloodied value : " + str(bloodied_value) + "\n" +
+        " Surge value : " + str(surge_value) + "\n" +
+        " Surges per day : " + str(surge_day) + "\n" +
+        "Skills------------------------------------------------------\n" +
+        character_skills +
+        "Languages---------------------------------------------------\n" +
+        " " + str(languages_known) + "\n" +
+        "Items-------------------------------------------------------\n" +
+        " - " + weapon + "\n" + " - " + armor + "\n" + " - " + other + "\n" +
+        "------------------------------------------------------------"
         )
-    
-    #print(sheetOutput)
     return sheetOutput
     
 #TODO: create a GUI
 
-#TODO: add a main menu => choose [Random || Checkmarks] 
+#TODO: add a main menu => choose [Random] (|| Checkmarks => Java project] )
 #Random => single button + name => full character sheet
 #Checkmarks/Slots => Checkmarks the things you want => full character sheet
 
 def generateMainMenu():
+
     main = tk.Tk()
-    main.geometry("500x150")
+    main.geometry("500x100")
     main.title("Dungeons & Dragons 4th Edition - Character Sheet Creator")
 
     def generateRandomSheet():
+               
         root = tk.Tk()
-        root.geometry("800x900")
-        root.title("Dungeons & Dragons 4th Edition - Randomized Sheet")
+        root.geometry("800x930")
+        root.title("Dungeons & Dragons 4th Edition - Randomized Creator")
+        prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")
+        input = tk.Entry(root, state = "normal")
+        output = tk.Label(root, state = "disabled")
+        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[Take_Input(), disableState(), enableSave()])
+        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled")
+        #blocked until generate/displaybutton is not clicked
+        resetButton = tk.Button(root, text = "Reset", command = lambda:enableState())
+        #add reset button, that resets all variables, buttons, and input
+        exitButton = tk.Button(root, text = "Cancel", command = root.destroy)          
+
+        #blocks Input & generateButton after first use.
+        def disableState():
+            if (input['state'] == "normal" and displayButton['state'] == "normal"):
+                input['state'] = "disabled"
+                displayButton['state'] = "disabled"
+
+        #enables Save button/option after character is generated
+        def enableSave():
+            if (saveButton['state'] == "disabled"):
+                saveButton['state'] = "normal"
+
+        #reenable Input & generateButton 
+        def enableState():
+            if (input['state'] == "disabled" and displayButton['state'] == "disabled"):
+                input['state'] = "normal"
+                displayButton['state'] = "normal"
 
         def Take_Input():
             name = input.get()
             print(name)
             sheetOutput = generateSheet(name)
-            output.insert(tk.END, generateSheet(name))#Printing problem
-
-        prompt = tk.Label(text = "Name your Fantasy Dungeons & Dragons character: ")#gets printed into main window MUST FIX
-        input = tk.Entry(root)
-        output = tk.Text(root, height = 50, width = 95, bg = "light gray")
-        output.configure(state = "disabled")
-        displayButton = tk.Button(root, text = "Generate Character", command = lambda:Take_Input())
-        saveButton = tk.Button(root, text = "Save as PDF")
-        exitButton = tk.Button(root, text = "Close", command = root.destroy)    
+            output.config(text=sheetOutput) 
         
         prompt.pack()
         input.pack()
         output.pack()
         displayButton.pack()
         saveButton.pack()
-        exitButton.pack()    
-        tk.mainloop()
+        resetButton.pack()
+        exitButton.pack()
+        
 
-    
-    mainLabel = tk.Label(text = "Choose to have your Dungeons & Dragons character randomly generated\n or choose the parameters of your character.")
-    randomButton = tk.Button(main, text = "Randomized Character", command = lambda:generateRandomSheet())
-    checkButton = tk.Button(main, text = "Personalized Character", command = lambda:generatePersonalSheet())
+        root.mainloop()
+
+    mainLabel = tk.Label(main, text = "Choose to have a randomly generated Dungeons & Dragons character.\n You can also save the character sheet as a PDF.")
+    randomButton = tk.Button(main, text = "Randomize Character", command = lambda:generateRandomSheet())
+    exitMainButton = tk.Button(main, text = "Exit", command = main.destroy)
+    creatorLabel = tk.Label(main, text = "Created by Duc Huy Bui")
 
     mainLabel.pack()
     randomButton.pack()
-    checkButton.pack()
-    tk.mainloop()
+    exitMainButton.pack()
+    creatorLabel.pack( side = "right")
+    main.mainloop()
+
 
 
 def main():
