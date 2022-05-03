@@ -1,9 +1,11 @@
 import random
 import math
 import tkinter  as tk
+import copy
+from fpdf import FPDF
 
 
-#arrays
+#lists & dictionaries, selected from & not to be edited
 races = ["Deva", "Dragonborn", "Dwarf", "Eladrin", "Half-Elf", "Elf", "Halfling", "Tiefling", "Human", 
          "Gnome", "Goliath", "Half-Orc", "Shifter", "Githzerai", "Minotaur", "Shardmind", "Wilden"]
 classes = ["Avenger", "Paladin", "Cleric", "Invoker", "Ardent", 
@@ -12,7 +14,6 @@ classes = ["Avenger", "Paladin", "Cleric", "Invoker", "Ardent",
           "Warlock", "Wizard", "Sorcerer", 
           "Monk", "Battlemind", "Psion", "Runepriest", "Seeker"]
 ability_scores = [16, 14, 13, 12, 11, 10]
-stat_mods = {}
 defenses = { "AC" : 10,
             "Fortitude" : 10,
             "Reflex" : 10,
@@ -37,26 +38,23 @@ skills = {"Acrobatics" : [0, "Dex", False],
           "Thievery" : [0, "Dex", False]
     }
 languages = ["Common", "Deep Speech", "Draconic", "Dwarven", "Elven", "Giant", "Goblin", "Primordial", "Supernal", "Abyssal"]
-languages_known = []
-speed = 0
-maxHP = 0
-bloodied_value = 0
-surge_value = 0
-surge_day = 0
-weapon_list = []
-weapon_group = []
 simple_onehand = ["Club", "Dagger", "Javelin", "Mace", "Sickle", "Spear"]
 simple_twohand = ["Greatclub", "Morningstar", "Quarterstaff", "Scythe"]
 simple_range = ["Hand Crossbow", "Crossbow"]
 mili_onehand = ["Battleaxe", "Flail", "Handaxe", "Longsword", "Scimitar", "Shortsword", "Throwing Hammer", "Warhammer", "War Pick"]
 mili_twohand = ["Falchion", "Glaive", "Greataxe", "Greatsword", "Halberd", "Heavy Flail", "Longspear", "Maul"]
 mili_range = ["Longbow", "Shortbow"]
-armor_list = []
-implement_list = []
-weapon = ""
-armor = ""
-#implement/off-hand
-other = ""
+
+#file management
+dir = r"C:\Users\Yaoi Boy\source\repos\DnD_Character_Sheet"
+
+#creates header for PDF file
+class PDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 16)
+        self.cell(90)
+        self.cell(0,0, "4th Edition - Character Sheet", 1, 0, 'C')
+        self.ln(10)
 
 def generateSheet(name):
     #allocation
@@ -65,13 +63,35 @@ def generateSheet(name):
     char_race = random.choice(races)
     char_class = random.choice(classes)
 
+    stat_mods = {}
+    languages_known = []
+    speed = 0
+    maxHP = 0
+    bloodied_value = 0
+    surge_value = 0
+    surge_day = 0
+    weapon_list = []
+    weapon_group = []
+    armor_list = []
+    implement_list = []
+    weapon = ""
+    armor = ""
+    #implement/off-hand
+    other = ""
+
+    #create deep copies for lists & dictionaries
+    character_abilties = copy.deepcopy(ability_scores)
+    character_defenses = copy.deepcopy(defenses)
+    character_skills = copy.deepcopy(skills)
+
+
     stats = { 
-        "Str" : ability_scores.pop(random.randrange(0, len(ability_scores))),
-        "Const" : ability_scores.pop(random.randrange(0, len(ability_scores))),
-        "Dex" : ability_scores.pop(random.randrange(0, len(ability_scores))),
-        "Int" : ability_scores.pop(random.randrange(0, len(ability_scores))),
-        "Wis" : ability_scores.pop(random.randrange(0, len(ability_scores))),
-        "Cha" : ability_scores.pop(random.randrange(0, len(ability_scores))),
+        "Str" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Const" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Dex" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Int" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Wis" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Cha" : character_abilties.pop(random.randrange(0, len(character_abilties))),
     }
 
     #racial bonuses
@@ -79,58 +99,58 @@ def generateSheet(name):
     if char_race == "Deva":
             stats["Int"] += 2
             stats["Wis"] += 2   
-            skills["History"][0] += 2
-            skills["Religion"][0] += 2
+            character_skills["History"][0] += 2
+            character_skills["Religion"][0] += 2
             languages_known = ["Common", languages.pop(random.randrange(len(languages[1:]))), languages.pop(random.randrange(len(languages[1:])))]
             speed = 6
     elif char_race == "Dragonborn":
             stats["Str"] += 2
             stats["Cha"] += 2
-            skills["History"][0] += 2
-            skills["Intimidate"][0] += 2
+            character_skills["History"][0] += 2
+            character_skills["Intimidate"][0] += 2
             languages_known = ["Common", "Draconic"]
             speed = 6
     elif char_race == "Dwarf":
             stats["Const"] += 2
             stats["Wis"] += 2
-            skills["Dungeoneering"][0] += 2
-            skills["Endurance"][0] += 2
+            character_skills["Dungeoneering"][0] += 2
+            character_skills["Endurance"][0] += 2
             languages_known = ["Common", "Dwarven"]
             speed = 6
     elif char_race == "Eladrin":
             stats["Dex"] += 2
             stats["Int"] += 2
-            skills["Arcana"][0] += 2
-            skills["History"][0] += 2
+            character_skills["Arcana"][0] += 2
+            character_skills["History"][0] += 2
             languages_known = ["Common", "Elven"]
             speed = 6
     elif char_race == "Half-Elf":
         stats["Const"] += 2
         stats["Cha"] += 2
-        skills["History"][0] += 2
-        skills["Religion"][0] += 2
+        character_skills["History"][0] += 2
+        character_skills["Religion"][0] += 2
         sub_language = ["Deep Speech", "Draconic", "Dwarven", "Giant", "Goblin", "Primordial", "Supernal", "Abyssal"]
         languages_known = ["Common", "Elven", random.choice(sub_language)]
         speed = 6
     elif char_race == "Elf":
         stats["Dex"] += 2
         stats["Wis"] += 2
-        skills["Nature"][0] += 2
-        skills["Perception"][0] += 2
+        character_skills["Nature"][0] += 2
+        character_skills["Perception"][0] += 2
         languages_known = ["Common", "Elven"]
         speed = 6
     elif char_race == "Halfling":
         stats["Dex"] += 2
         stats["Cha"] += 2
-        skills["Acrobatics"][0] += 2
-        skills["Thievery"][0] += 2
+        character_skills["Acrobatics"][0] += 2
+        character_skills["Thievery"][0] += 2
         languages_known = ["Common", languages[1:].pop(random.randrange(len(languages[1:])))]
         speed = 6
     elif char_race == "Tiefling":
         stats["Int"] += 2
         stats["Cha"] += 2
-        skills["Bluff"][0] += 2
-        skills["Stealth"][0] += 2
+        character_skills["Bluff"][0] += 2
+        character_skills["Stealth"][0] += 2
         languages_known = ["Common", languages[1:].pop(random.randrange(len(languages[1:])))]
         speed = 6
     elif char_race == "Human":
@@ -140,63 +160,63 @@ def generateSheet(name):
     elif char_race == "Gnome":
         stats["Int"] += 2
         stats["Cha"] += 2
-        skills["Arcana"][0] += 2
-        skills["Stealth"][0] += 2
+        character_skills["Arcana"][0] += 2
+        character_skills["Stealth"][0] += 2
         languages_known = ["Common", "Elven"]
         speed = 5
     elif char_race == "Goliath":
         stats["Str"] += 2
         stats["Const"] += 2
-        skills["Athletics"][0] += 2
-        skills["Nature"][0] += 2
+        character_skills["Athletics"][0] += 2
+        character_skills["Nature"][0] += 2
         sub_language = ["Dwarven", "Giant"]
         languages_known = ["Common", random.choice(sub_language)]
         speed = 6
     elif char_race == "Half-Orc":
         stats["Str"] += 2
         stats["Dex"] += 2
-        skills["Endurance"][0] += 2
-        skills["Intimidate"][0] += 2
+        character_skills["Endurance"][0] += 2
+        character_skills["Intimidate"][0] += 2
         languages_known = ["Common", "Giant"]
         speed = 6
     elif char_race == "Shifter":
         stats["Str"] += 2
         stats["Wis"] += 2
-        skills["Athletics"][0] += 2
-        skills["Endurance"][0] += 2
+        character_skills["Athletics"][0] += 2
+        character_skills["Endurance"][0] += 2
         languages_known = ["Common", languages[1:].pop(random.randrange(len(languages[1:])))]
         speed = 6
     elif char_race == "Githzerai":
         stats["Wis"] += 2
         substat = ["Int", "Dex"]
         stats[random.choice(substat)] += 2
-        skills["Acrobatics"][0] += 2
-        skills["Athletics"][0] += 2
+        character_skills["Acrobatics"][0] += 2
+        character_skills["Athletics"][0] += 2
         languages_known = ["Common", "Deep Speech"]
         speed = 6
     elif char_race == "Minotaur":
         stats["Str"] += 2
         substat = ["Const", "Wis"]
         stats[random.choice(substat)] += 2
-        skills["Nature"][0] += 2
-        skills["Perception"][0] += 2
+        character_skills["Nature"][0] += 2
+        character_skills["Perception"][0] += 2
         languages_known = ["Common", languages[1:].pop(random.randrange(len(languages[1:])))]
         speed = 6
     elif char_race == "Shardmind":
         stats["Int"] += 2
         substat = ["Wis", "Cha"]
         stats[random.choice(substat)] += 2
-        skills["Arcana"][0] += 2
-        skills["Endurance"][0] += 2
-        skills[random.choice(list(skills.keys()))][0] += 2
+        character_skills["Arcana"][0] += 2
+        character_skills["Endurance"][0] += 2
+        character_skills[random.choice(list(character_skills.keys()))][0] += 2
         languages_known = ["Common", "Deep Speech", languages[2:].pop(random.randrange(len(languages[2:])))]
         speed = 6
     elif char_race == "Wilden":
         stats["Wis"] += 2
         substat = ["Const", "Dex"]
         stats[random.choice(substat)] += 2
-        skills["Nature"][0] += 2
-        skills["Stealth"][0] += 2
+        character_skills["Nature"][0] += 2
+        character_skills["Stealth"][0] += 2
         languages_known = ["Common", "Elven"]
         speed = 6
 
@@ -222,14 +242,14 @@ def generateSheet(name):
     #class bonuses
     #TODO: add class feat option
     if char_class == "Avenger":
-            skills["Religion"][2] = True
+            character_skills["Religion"][2] = True
             available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Perception", "Stealth", "Streetwise"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Reflex"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Reflex"] += 1
+            character_defenses["Will"] += 1
             maxHP = 7 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -240,14 +260,14 @@ def generateSheet(name):
             armor = "Cloth"    
             other = "Holy Symbol"
     elif char_class == "Paladin":
-            skills["Religion"][2] = True
+            character_skills["Religion"][2] = True
             available_skills = ["Diplomacy", "Endurance", "Heal", "History", "Insight", "Intimidate"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Reflex"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Reflex"] += 1
+            character_defenses["Will"] += 1
             maxHP = 15 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -263,12 +283,12 @@ def generateSheet(name):
             else: 
                 other = "Holy Symbol"
     elif char_class == "Cleric":
-            skills["Religion"][2] = True
+            character_skills["Religion"][2] = True
             available_skills = ["Arcana", "Diplomacy", "Heal", "History", "Insight"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Will"] += 2
+                character_skills[x][2] = True
+            character_defenses["Will"] += 2
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -280,14 +300,14 @@ def generateSheet(name):
             armor = random.choice(armor_list)
             other = "Holy Symbol"
     elif char_class == "Invoker":
-            skills["Religion"][2] = True
+            character_skills["Religion"][2] = True
             available_skills = ["Arcana", "Diplomacy", "Endurance", "History", "Insight", "Intimidate"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Reflex"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Reflex"] += 1
+            character_defenses["Will"] += 1
             maxHP = 10 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -303,9 +323,9 @@ def generateSheet(name):
             available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate", "Streetwise"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Will"] += 1
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -320,8 +340,8 @@ def generateSheet(name):
             available_skills = ["Athletics", "Endurance", "Heal", "Intimidate", "Streetwise"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 2
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 2
             maxHP = 15 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -340,9 +360,9 @@ def generateSheet(name):
             available_skills = ["Athletics", "Diplomacy", "Endurance", "Heal", "History", "Intimidate"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Will"] += 1
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -361,9 +381,9 @@ def generateSheet(name):
             available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Perception", "Stealth"]
             sub_skills = [random.choice(main_skills), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Reflex"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Reflex"] += 1
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -375,13 +395,13 @@ def generateSheet(name):
             armor = random.choice(armor_list)
             other = ""
     elif char_class == "Rogue":
-            skills["Stealth"][2] = True
-            skills["Thievery"][2] = True
+            character_skills["Stealth"][2] = True
+            character_skills["Thievery"][2] = True
             available_skills = ["Acrobatics", "Athletics", "Bluff", "Dungeoneering", "Insight", "Intimidate", "Perception", "Streetwise"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Reflex"] += 2
+                character_skills[x][2] = True
+            character_defenses["Reflex"] += 2
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -395,8 +415,8 @@ def generateSheet(name):
             available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Intimidate", "Nature", "Perception"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 2
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 2
             maxHP = 15 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -408,13 +428,13 @@ def generateSheet(name):
             armor = random.choice(armor_list)
             other = ""
     elif char_class == "Druid":
-            skills["Nature"][2] = True
+            character_skills["Nature"][2] = True
             available_skills = ["Arcana", "Athletics", "Diplomacy", "Endurance", "Heal", "History", "Insight", "Perception"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Reflex"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Reflex"] += 1
+            character_defenses["Will"] += 1
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -427,13 +447,13 @@ def generateSheet(name):
             armor = random.choice(armor_list)
             other = random.choice(implement_list)
     elif char_class == "Shaman":
-            skills["Nature"][2] = True
+            character_skills["Nature"][2] = True
             available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Perception", "Religion"]
             sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
             for x in sub_skills:
-                skills[x][2] = True
-            defenses["Fortitude"] += 1
-            defenses["Will"] += 1
+                character_skills[x][2] = True
+            character_defenses["Fortitude"] += 1
+            character_defenses["Will"] += 1
             maxHP = 12 + stats["Const"]
             bloodied_value = math.floor(maxHP/2)
             surge_value = math.floor(bloodied_value/2)
@@ -448,13 +468,13 @@ def generateSheet(name):
             armor = random.choice(armor_list)
             other = "Totem"
     elif char_class == "Warden":
-           skills["Nature"][2] = True
+           character_skills["Nature"][2] = True
            available_skills = ["Athletics", "Dungeoneering", "Endurance", "Heal", "Intimidate", "Perception"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Fortitude"] += 1
-           defenses["Will"] += 1
+               character_skills[x][2] = True
+           character_defenses["Fortitude"] += 1
+           character_defenses["Will"] += 1
            maxHP = 17 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -467,13 +487,13 @@ def generateSheet(name):
            armor = random.choice(armor_list)
            other = random.choice(shield_list)
     elif char_class == "Bard":
-           skills["Arcana"][2] = True
+           character_skills["Arcana"][2] = True
            available_skills = ["Acrobatics", "Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Heal", "History", "Insight", "Intimidation", "Nature", "Perception", "Religion", "Streetwise"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Reflex"] += 1
-           defenses["Will"] += 1
+               character_skills[x][2] = True
+           character_defenses["Reflex"] += 1
+           character_defenses["Will"] += 1
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -493,9 +513,9 @@ def generateSheet(name):
            available_skills = ["Arcana", "Bluff", "History", "Insight", "Intimidate", "Religion", "Streetwise", "Thievery"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Reflex"] += 1
-           defenses["Will"] += 1
+               character_skills[x][2] = True
+           character_defenses["Reflex"] += 1
+           character_defenses["Will"] += 1
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -507,12 +527,12 @@ def generateSheet(name):
            implement_list = ["Rod", "Wand"]
            other = random.choice(implement_list)
     elif char_class == "Wizard":
-           skills["Arcana"][2] = True
+           character_skills["Arcana"][2] = True
            available_skills = ["Diplomacy", "Dungeoneering", "History", "Insight", "Nature", "Religion"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Will"] += 2
+               character_skills[x][2] = True
+           character_defenses["Will"] += 2
            maxHP = 10 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -523,12 +543,12 @@ def generateSheet(name):
            implement_list = ["Orb", "Staff", "Wand"]
            other = random.choice(implement_list)
     elif char_class == "Sorcerer":
-           skills["Arcana"][2] = True
+           character_skills["Arcana"][2] = True
            available_skills = ["Athletics", "Bluff", "Diplomacy", "Dungeoneering", "Endurance", "History", "Insight", "Intimidate", "Nature"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Will"] += 2
+               character_skills[x][2] = True
+           character_defenses["Will"] += 2
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -543,10 +563,10 @@ def generateSheet(name):
            available_skills = ["Acrobatics", "Athletics", "Diplomacy", "Endurance", "Heal", "Insight", "Perception", "Religion", "Stealth", "Thievery"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Fortitude"] += 1
-           defenses["Reflex"] += 1
-           defenses["Will"] += 1
+               character_skills[x][2] = True
+           character_defenses["Fortitude"] += 1
+           character_defenses["Reflex"] += 1
+           character_defenses["Will"] += 1
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -559,8 +579,8 @@ def generateSheet(name):
            available_skills = ["Arcana", "Athletics", "Bluff", "Diplomacy", "Endurance", "Heal", "Insight", "Intimidate"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Will"] += 2
+               character_skills[x][2] = True
+           character_defenses["Will"] += 2
            maxHP = 15 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -579,8 +599,8 @@ def generateSheet(name):
            available_skills = ["Arcana", "Bluff", "Diplomacy", "Dungeoneering", "History", "Insight", "Intimidate", "Perception"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Will"] += 2
+               character_skills[x][2] = True
+           character_defenses["Will"] += 2
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -592,12 +612,12 @@ def generateSheet(name):
            armor = "Cloth"
            other = random.choice(implement_list)
     elif char_class == "Runepriest":
-           skills["Religion"][2] = True
+           character_skills["Religion"][2] = True
            available_skills = ["Arcana", "Athletics", "Endurance", "Heal", "History", "Insight", "Thievery"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True
-           defenses["Will"] += 2
+               character_skills[x][2] = True
+           character_defenses["Will"] += 2
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -612,13 +632,13 @@ def generateSheet(name):
            else: 
                other = ""
     elif char_class == "Seeker":
-           skills["Nature"][2] = True
+           character_skills["Nature"][2] = True
            available_skills = ["Acrobatics", "Athletics", "Endurance", "Heal", "Insight", "Intimidate", "Perception", "Stealth"]
            sub_skills = [available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills))), available_skills.pop(random.randrange(len(available_skills)))]
            for x in sub_skills:
-               skills[x][2] = True    
-           defenses["Reflex"] += 1
-           defenses["Will"] += 1
+               character_skills[x][2] = True    
+           character_defenses["Reflex"] += 1
+           character_defenses["Will"] += 1
            maxHP = 12 + stats["Const"]
            bloodied_value = math.floor(maxHP/2)
            surge_value = math.floor(bloodied_value/2)
@@ -632,93 +652,94 @@ def generateSheet(name):
 
     #generates Defense Values
     #alters defenses according to armor types, other benefits, and mods
+    #-armors
     if armor == "Cloth":
-        defenses["AC"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
+        character_defenses["AC"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
     elif armor == "Leather":
-        defenses["AC"] += 3 + max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
+        character_defenses["AC"] += 3 + max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
     elif armor == "Hide":
-        defenses["AC"] += 4 
+        character_defenses["AC"] += 4 
     elif armor == "Chainmail":
-        defenses["AC"] += 5 
+        character_defenses["AC"] += 5 
     elif armor == "Scale":
-        defenses["AC"] += 6 
+        character_defenses["AC"] += 6 
         speed -= 1
-        for x in skills:
-            if skills[x][1] == "Dex" or skills[x][1] == "Str":
-                skills[x][0] -= 1
+        for x in character_skills:
+            if character_skills[x][1] == "Dex" or character_skills[x][1] == "Str":
+                character_skills[x][0] -= 1
     elif armor == "Plate":
-        defenses["AC"] += 8
+        character_defenses["AC"] += 8
         speed -= 2
-        for x in skills:
-            if skills[x][1] == "Dex" or skills[x][1] == "Str":
-                skills[x][0] -= 1
-
+        for x in character_skills:
+            if character_skills[x][1] == "Dex" or character_skills[x][1] == "Str":
+                character_skills[x][0] -= 1
+    #-shields
     if "Light Shield" in other and any("onehand" in x for x in weapon_list):
-        defenses["AC"] += 2
+        character_defenses["AC"] += 2
     elif "Heavy Shield" in other and any("onehand" in x for x in weapon_list):
-        defenses["AC"] += 3
+        character_defenses["AC"] += 3
         speed -= 1
-        
-    defenses["Fortitude"] += max(stat_mods["Str.mod"], stat_mods["Const.mod"])
-    defenses["Reflex"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
-    defenses["Will"] += max(stat_mods["Wis.mod"], stat_mods["Cha.mod"])
+    #-other defenses
+    character_defenses["Fortitude"] += max(stat_mods["Str.mod"], stat_mods["Const.mod"])
+    character_defenses["Reflex"] += max(stat_mods["Dex.mod"], stat_mods["Int.mod"])
+    character_defenses["Will"] += max(stat_mods["Wis.mod"], stat_mods["Cha.mod"])
 
     #generate Skill Bonuses
     #skill mod setter, input is a String - the name of the Skill
     def mod_skills(skill):
-        if skills[skill][2] == True:
-            skills[skill][0] += 5
-        if skills[skill][1] == "Str":
-            skills[skill][0] += stat_mods["Str.mod"]
-        elif skills[skill][1] == "Const":
-            skills[skill][0] += stat_mods["Const.mod"]
-        elif skills[skill][1] == "Dex":
-            skills[skill][0] += stat_mods["Dex.mod"]
-        elif skills[skill][1] == "Int":
-            skills[skill][0] += stat_mods["Int.mod"]
-        elif skills[skill][1] == "Wis":
-            skills[skill][0] += stat_mods["Wis.mod"]
-        elif skills[skill][1] == "Cha":
-            skills[skill][0] += stat_mods["Cha.mod"]
-    for x in skills:
+        if character_skills[skill][2] == True:
+            character_skills[skill][0] += 5
+        if character_skills[skill][1] == "Str":
+            character_skills[skill][0] += stat_mods["Str.mod"]
+        elif character_skills[skill][1] == "Const":
+            character_skills[skill][0] += stat_mods["Const.mod"]
+        elif character_skills[skill][1] == "Dex":
+            character_skills[skill][0] += stat_mods["Dex.mod"]
+        elif character_skills[skill][1] == "Int":
+            character_skills[skill][0] += stat_mods["Int.mod"]
+        elif character_skills[skill][1] == "Wis":
+            character_skills[skill][0] += stat_mods["Wis.mod"]
+        elif character_skills[skill][1] == "Cha":
+            character_skills[skill][0] += stat_mods["Cha.mod"]
+    for x in character_skills:
         mod_skills(x)
 
     #OUTPUT optmization
-    character_abilities = ""
+    str_character_abilities = ""
     for x in stats:
-        character_abilities += " - " + x + ": " + str(stats[x]) + "\n"
-    character_modifiers = ""
+        str_character_abilities += " - " + x + ": " + str(stats[x]) + "\n"
+    str_character_modifiers = ""
     for x in stat_mods:
-        character_modifiers += " - " + x + ": +" + str(stat_mods[x]) + "\n"
-    character_defenses = ""
-    for x in defenses:
-        character_defenses += " - " + x + ": " + str(defenses[x]) + "\n"
-    character_skills = ""
-    for x in skills:
-        character_skills += " - " + x + ": " + str(skills[x]) + "\n"
+        str_character_modifiers += " - " + x + ": +" + str(stat_mods[x]) + "\n"
+    str_character_defenses = ""
+    for x in character_defenses:
+        str_character_defenses += " - " + x + ": " + str(character_defenses[x]) + "\n"
+    str_character_skills = ""
+    for x in character_skills:
+        str_character_skills += " - " + x + ": " + str(character_skills[x]) + "\n"
 
     sheetOutput = str(
         "Basic Information------------------------------------------\n" +
         "  -  " + char_name + "  -  " + char_race + "  -  " + char_class + "\n" +
         " Speed : " + str(speed) + "\n"  +
         "Ability Scores----------------------------------------------\n" +
-        character_abilities +
+        str_character_abilities +
         "Ability Modifiers--------------------\n" +
-        character_modifiers +
+        str_character_modifiers +
         "Defenses----------------------------------------------------\n" +
-        character_defenses +
+        str_character_defenses +
         "Health------------------------------------------------------\n" +
         " Max HP : " + str(maxHP) + "\n" +
         " Bloodied value : " + str(bloodied_value) + "\n" +
         " Surge value : " + str(surge_value) + "\n" +
         " Surges per day : " + str(surge_day) + "\n" +
         "Skills------------------------------------------------------\n" +
-        character_skills +
+        str_character_skills +
         "Languages---------------------------------------------------\n" +
         " " + str(languages_known) + "\n" +
-        "Items-------------------------------------------------------\n" +
+        "Items---------------------------------------------------------\n" +
         " - " + weapon + "\n" + " - " + armor + "\n" + " - " + other + "\n" +
-        "------------------------------------------------------------"
+        "-----------------------------------------------------------------"
         )
     return sheetOutput
     
@@ -739,15 +760,15 @@ def generateMainMenu():
         root = tk.Tk()
         root.geometry("800x930")
         root.title("Dungeons & Dragons 4th Edition - Randomized Creator")
-        prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")
+        prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")    
         input = tk.Entry(root, state = "normal")
         output = tk.Label(root, state = "disabled")
         displayButton = tk.Button(root, text = "Generate Character", command = lambda:[Take_Input(), disableState(), enableSave()])
-        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled")
         #blocked until generate/displaybutton is not clicked
-        resetButton = tk.Button(root, text = "Reset", command = lambda:enableState())
-        #add reset button, that resets all variables, buttons, and input
-        exitButton = tk.Button(root, text = "Cancel", command = root.destroy)          
+        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled", command = lambda:generatePDF())
+        #reset button, that resets all variables, buttons, and input
+        resetButton = tk.Button(root, text = "Reset", command = lambda:[enableState(), reset_Option()])        
+        exitButton = tk.Button(root, text = "Cancel", command = root.quit)          
 
         #blocks Input & generateButton after first use.
         def disableState():
@@ -766,11 +787,30 @@ def generateMainMenu():
                 input['state'] = "normal"
                 displayButton['state'] = "normal"
 
+        #takes name input
         def Take_Input():
             name = input.get()
             print(name)
             sheetOutput = generateSheet(name)
             output.config(text=sheetOutput) 
+
+        #reset
+        def reset_Option():
+            input.delete(0, tk.END)
+            output.configure(text = "")
+
+        #create PDF for saveButton
+        #ideally copy an actual DnD sheet & and inserts generateSheet() output into the file, matching the slots
+        def generatePDF():
+            name = input.get()
+            sheetOutput = generateSheet(name)
+
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Times", '', size = 10)
+            pdf.multi_cell(0, 10, txt = sheetOutput)
+            pdf.output(name + "-Character Sheet.pdf")
+
         
         prompt.pack()
         input.pack()
@@ -779,8 +819,6 @@ def generateMainMenu():
         saveButton.pack()
         resetButton.pack()
         exitButton.pack()
-        
-
         root.mainloop()
 
     mainLabel = tk.Label(main, text = "Choose to have a randomly generated Dungeons & Dragons character.\n You can also save the character sheet as a PDF.")
