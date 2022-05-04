@@ -1,6 +1,7 @@
 import random
 import math
 import tkinter  as tk
+from tkinter import *
 import copy
 from fpdf import FPDF
 
@@ -8,11 +9,13 @@ from fpdf import FPDF
 #lists & dictionaries, selected from & not to be edited
 races = ["Deva", "Dragonborn", "Dwarf", "Eladrin", "Half-Elf", "Elf", "Halfling", "Tiefling", "Human", 
          "Gnome", "Goliath", "Half-Orc", "Shifter", "Githzerai", "Minotaur", "Shardmind", "Wilden"]
+char_race = ""
 classes = ["Avenger", "Paladin", "Cleric", "Invoker", "Ardent", 
           "Fighter", "Warlord", "Ranger", "Rogue", 
           "Barbarian", "Druid", "Shaman", "Warden", "Bard", 
           "Warlock", "Wizard", "Sorcerer", 
           "Monk", "Battlemind", "Psion", "Runepriest", "Seeker"]
+char_class = ""
 ability_scores = [16, 14, 13, 12, 11, 10]
 defenses = { "AC" : 10,
             "Fortitude" : 10,
@@ -56,6 +59,7 @@ class PDF(FPDF):
         self.cell(0,0, "4th Edition - Character Sheet", 1, 0, 'C')
         self.ln(10)
 
+#generate Random character Sheet
 def generateSheet(name):
     #allocation
     #name, race, class
@@ -752,13 +756,13 @@ def generateSheet(name):
 def generateMainMenu():
 
     main = tk.Tk()
-    main.geometry("500x100")
+    main.geometry("500x150")
     main.title("Dungeons & Dragons 4th Edition - Character Sheet Creator")
 
     def generateRandomSheet():
                
         root = tk.Tk()
-        root.geometry("800x930")
+        root.geometry("800x950")
         root.title("Dungeons & Dragons 4th Edition - Randomized Creator")
         prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")    
         input = tk.Entry(root, state = "normal")
@@ -819,15 +823,94 @@ def generateMainMenu():
         saveButton.pack()
         resetButton.pack()
         exitButton.pack()
-        root.mainloop()
+        #root.mainloop()
+
+    def generateSelectSheet():
+        root = tk.Tk()
+        root.geometry("800x950")
+        root.title("Dungeons & Dragons 4th Edition - Chosen Parameter Creator")
+        #choose Name
+        prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")
+        name_input = tk.Entry(root, state = "normal")
+        #choose Race
+        race_prompt = tk.Label(root, text = "Character Race: ")
+        default_race = tk.StringVar(root)
+        default_race.set(races[8])
+
+        def test():
+            output.config(text = ("race is " + char_race))
+
+        raceMenu = tk.OptionMenu(root, default_race, *races, command = test)
+        char_race = default_race.get()
+        #when User is ready, completely prints into output
+        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[Take_Input(), disableState(), enableSave()])
+        #blocked until generate/displaybutton is not clicked
+        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled", command = lambda:generatePDF())
+        #reset button, that resets all variables, buttons, and input
+        resetButton = tk.Button(root, text = "Reset", command = lambda:[enableState(), reset_Option()])   
+        #exit Button
+        exitButton = tk.Button(root, text = "Cancel", command = root.quit)
+        #output Entirety
+        output = tk.Label(root, state = "disabled")
+        
+        #blocks Input & generateButton after first use.
+        def disableState():
+            if (name_input['state'] == "normal" and displayButton['state'] == "normal"):
+                name_input['state'] = "disabled"
+                displayButton['state'] = "disabled"
+
+        #enables Save button/option after character is generated
+        def enableSave():
+            if (saveButton['state'] == "disabled"):
+                saveButton['state'] = "normal"
+
+        #reenable Input & generateButton 
+        def enableState():
+            if (name_input['state'] == "disabled" and displayButton['state'] == "disabled"):
+                name_input['state'] = "normal"
+                displayButton['state'] = "normal"
+
+        #takes name input
+        def Take_Input():
+            name = name_input.get()
+            print(name)
+            sheetOutput = generateSheet(name)
+            output.config(text=sheetOutput) 
+
+        #reset
+        def reset_Option():
+            input.delete(0, tk.END)
+            output.configure(text = "")
+
+        def generatePDF(): 
+            name = name_input.get()
+            sheetOutput = generateSheet(name)
+
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Times", '', size = 10)
+            pdf.multi_cell(0, 10, txt = sheetOutput)
+            pdf.output(name + "-Character Sheet.pdf")
+
+        prompt.pack()
+        name_input.pack()
+        race_prompt.pack()
+        raceMenu.pack()            
+        output.pack()
+        displayButton.pack()
+        saveButton.pack()
+        resetButton.pack()
+        exitButton.pack()
 
     mainLabel = tk.Label(main, text = "Choose to have a randomly generated Dungeons & Dragons character.\n You can also save the character sheet as a PDF.")
     randomButton = tk.Button(main, text = "Randomize Character", command = lambda:generateRandomSheet())
+    selectButton = tk.Button(main, text = "Create Character", command = lambda:generateSelectSheet())
     exitMainButton = tk.Button(main, text = "Exit", command = main.destroy)
     creatorLabel = tk.Label(main, text = "Created by Duc Huy Bui")
 
     mainLabel.pack()
     randomButton.pack()
+    selectButton.pack()
     exitMainButton.pack()
     creatorLabel.pack( side = "right")
     main.mainloop()
