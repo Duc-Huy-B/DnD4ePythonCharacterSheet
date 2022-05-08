@@ -95,7 +95,7 @@ def generateSheet(name):
         "Dex" : character_abilties.pop(random.randrange(0, len(character_abilties))),
         "Int" : character_abilties.pop(random.randrange(0, len(character_abilties))),
         "Wis" : character_abilties.pop(random.randrange(0, len(character_abilties))),
-        "Cha" : character_abilties.pop(random.randrange(0, len(character_abilties))),
+        "Cha" : character_abilties.pop(random.randrange(0, len(character_abilties)))
     }
 
     #racial bonuses
@@ -772,7 +772,7 @@ def generateMainMenu():
         saveButton = tk.Button(root, text = "Save as PDF", state = "disabled", command = lambda:generatePDF())
         #reset button, that resets all variables, buttons, and input
         resetButton = tk.Button(root, text = "Reset", command = lambda:[enableState(), reset_Option()])        
-        exitButton = tk.Button(root, text = "Cancel", command = root.quit)          
+        exitButton = tk.Button(root, text = "Cancel", command = root.destroy)          
 
         #blocks Input & generateButton after first use.
         def disableState():
@@ -832,27 +832,112 @@ def generateMainMenu():
         #choose Name
         prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")
         name_input = tk.Entry(root, state = "normal")
+        #when User is ready, completely prints into output
+        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[disableState(), enableSave()])
+        #blocked until generate/displaybutton is not clicked
+        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled",)
+        #reset button, that resets all variables, buttons, and input
+        resetButton = tk.Button(root, text = "Reset", command = lambda:[enableState(), reset_Option()])   
+        #exit Button
+        exitButton = tk.Button(root, text = "Cancel", command = root.destroy)
+        #output Entirety
+        output = tk.Label(root, state = "disabled")
+
+        stats = { 
+            "Str:" : 0,
+            "Const:" : 0,
+            "Dex:" : 0,
+            "Int:" : 0,
+            "Wis:" : 0,
+            "Cha:" : 0
+        }
+        stat_mods = {
+            "Str.mod:" : 0,
+            "Const.mod:" : 0,
+            "Dex.mod:" : 0,
+            "Int.mod:" : 0,
+            "Wis.mod:" : 0,
+            "Cha.mod:" : 0
+            }
+        languages_known = []
+        speed = 0
+        maxHP = 0
+        bloodied_value = 0
+        surge_value = 0
+        surge_day = 0
+        weapon_list = []
+        weapon_group = []
+        armor_list = []
+        implement_list = []
+        weapon = ""
+        armor = ""
+        #implement/off-hand
+        other = ""
+
         #choose Race
         race_prompt = tk.Label(root, text = "Character Race: ")
         default_race = tk.StringVar(root)
         default_race.set(races[8])
-
-        def test():
-            output.config(text = ("race is " + char_race))
-
-        raceMenu = tk.OptionMenu(root, default_race, *races, command = test)
+        raceMenu = tk.OptionMenu(root, default_race, *races)
         char_race = default_race.get()
-        #when User is ready, completely prints into output
-        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[Take_Input(), disableState(), enableSave()])
-        #blocked until generate/displaybutton is not clicked
-        saveButton = tk.Button(root, text = "Save as PDF", state = "disabled", command = lambda:generatePDF())
-        #reset button, that resets all variables, buttons, and input
-        resetButton = tk.Button(root, text = "Reset", command = lambda:[enableState(), reset_Option()])   
-        #exit Button
-        exitButton = tk.Button(root, text = "Cancel", command = root.quit)
-        #output Entirety
-        output = tk.Label(root, state = "disabled")
         
+        def test_race():
+            output.config(text = ("race is " + char_race))
+        #choose Class
+        class_prompt = tk.Label(root, text = "Character Class: ")
+        default_class = tk.StringVar(root)
+        default_class.set(classes[0])
+        classMenu = tk.OptionMenu(root, default_class, *classes)
+        char_class = default_class.get()
+        
+        def test_class():
+            output.config(text = ("race is " + char_class))
+
+        seperator = tk.Label(root, text = "-------------------------------------------")
+
+        #choose Ability Scores
+        current_scores = copy.deepcopy(ability_scores)
+        str_label = tk.Label(root, text = "Strength - Str")
+        chosen_str = tk.StringVar(root)
+        statMenu = tk.OptionMenu(root, chosen_str, *current_scores)
+        stats["Str"] = chosen_str.get()
+        const_label = tk.Label(root, text = "Constitution - Const")
+        chosen_const = tk.StringVar(root)
+        statMenu1 = tk.OptionMenu(root, chosen_const, *current_scores)
+        stats["Const"] = chosen_const.get()
+        dex_label = tk.Label(root, text = "Dexterity - Dex")
+        chosen_dex = tk.StringVar(root)
+        statMenu2 = tk.OptionMenu(root, chosen_dex, *current_scores)
+        stats["Dex"] = chosen_dex.get()
+        int_label = tk.Label(root, text = "Intelligence - Int")
+        chosen_int = tk.StringVar(root)
+        statMenu3 = tk.OptionMenu(root, chosen_int, *current_scores)
+        stats["Int"] = chosen_int.get()
+        wis_label = tk.Label(root, text = "Wisdom - Wis")
+        chosen_wis = tk.StringVar(root)
+        statMenu4 = tk.OptionMenu(root, chosen_wis, *current_scores)
+        stats["Wis"] = chosen_wis.get()        
+        cha_label = tk.Label(root, text = "Charisma - Cha")
+        chosen_cha = tk.StringVar(root)
+        statMenu5 = tk.OptionMenu(root, chosen_cha, *current_scores)
+        stats["Cha"] = chosen_cha.get()
+
+        seperator1 = tk.Label(root, text = "-------------------------------------------")
+
+        def removeStrScore():
+            current_scores.remove(chosen_str.get())
+        def removeConstScore():
+            current_scores.remove(chosen_const.get())
+        def removeDexScore():
+            current_scores.remove(chosen_dex.get())
+        def removeIntScore():
+            current_scores.remove(chosen_int.get())
+        def removeWisScore():
+            current_scores.remove(chosen_wis.get())
+        def removeChaScore():
+            current_scores.remove(chosen_cha.get())
+            
+
         #blocks Input & generateButton after first use.
         def disableState():
             if (name_input['state'] == "normal" and displayButton['state'] == "normal"):
@@ -879,7 +964,7 @@ def generateMainMenu():
 
         #reset
         def reset_Option():
-            input.delete(0, tk.END)
+            name_input.delete(0, tk.END)
             output.configure(text = "")
 
         def generatePDF(): 
@@ -895,7 +980,23 @@ def generateMainMenu():
         prompt.pack()
         name_input.pack()
         race_prompt.pack()
-        raceMenu.pack()            
+        raceMenu.pack()  
+        class_prompt.pack()
+        classMenu.pack()  
+        seperator.pack()
+        str_label.pack()
+        statMenu.pack()
+        const_label.pack()
+        statMenu1.pack()
+        dex_label.pack()
+        statMenu2.pack()
+        int_label.pack()
+        statMenu3.pack()
+        wis_label.pack()
+        statMenu4.pack()
+        cha_label.pack()
+        statMenu5.pack()
+        seperator1.pack()
         output.pack()
         displayButton.pack()
         saveButton.pack()
