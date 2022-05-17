@@ -9,13 +9,11 @@ from fpdf import FPDF
 #lists & dictionaries, selected from & not to be edited
 races = ["Deva", "Dragonborn", "Dwarf", "Eladrin", "Half-Elf", "Elf", "Halfling", "Tiefling", "Human", 
          "Gnome", "Goliath", "Half-Orc", "Shifter", "Githzerai", "Minotaur", "Shardmind", "Wilden"]
-char_race = ""
 classes = ["Avenger", "Paladin", "Cleric", "Invoker", "Ardent", 
           "Fighter", "Warlord", "Ranger", "Rogue", 
           "Barbarian", "Druid", "Shaman", "Warden", "Bard", 
           "Warlock", "Wizard", "Sorcerer", 
           "Monk", "Battlemind", "Psion", "Runepriest", "Seeker"]
-char_class = ""
 ability_scores = [16, 14, 13, 12, 11, 10]
 defenses = { "AC" : 10,
             "Fortitude" : 10,
@@ -833,7 +831,7 @@ def generateMainMenu():
         prompt = tk.Label(root, text = "Name your Fantasy Dungeons & Dragons character: ")
         name_input = tk.Entry(root, state = "normal")
         #when User is ready, completely prints into output
-        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[disableState(), enableSave()])
+        displayButton = tk.Button(root, text = "Generate Character", command = lambda:[disableState(), enableSave(), Take_Input()])
         #blocked until generate/displaybutton is not clicked
         saveButton = tk.Button(root, text = "Save as PDF", state = "disabled",)
         #reset button, that resets all variables, buttons, and input
@@ -843,21 +841,25 @@ def generateMainMenu():
         #output Entirety
         output = tk.Label(root, state = "disabled")
 
+        #Variables used for Selected Character creation
+        info = {"name" : "",
+                "race" : "",
+                "class" : ""}
         stats = { 
-            "Str:" : 0,
-            "Const:" : 0,
-            "Dex:" : 0,
-            "Int:" : 0,
-            "Wis:" : 0,
-            "Cha:" : 0
+            "Str" : 0,
+            "Const" : 0,
+            "Dex" : 0,
+            "Int" : 0,
+            "Wis" : 0,
+            "Cha" : 0
         }
         stat_mods = {
-            "Str.mod:" : 0,
-            "Const.mod:" : 0,
-            "Dex.mod:" : 0,
-            "Int.mod:" : 0,
-            "Wis.mod:" : 0,
-            "Cha.mod:" : 0
+            "Str.mod" : 0,
+            "Const.mod" : 0,
+            "Dex.mod" : 0,
+            "Int.mod" : 0,
+            "Wis.mod" : 0,
+            "Cha.mod" : 0
             }
         languages_known = []
         speed = 0
@@ -874,68 +876,82 @@ def generateMainMenu():
         #implement/off-hand
         other = ""
 
+        #get Race
+        def getRace(choice):
+            choice = chosen_race.get()
+            info["race"] = str(choice)
+
         #choose Race
         race_prompt = tk.Label(root, text = "Character Race: ")
-        default_race = tk.StringVar(root)
-        default_race.set(races[8])
-        raceMenu = tk.OptionMenu(root, default_race, *races)
-        char_race = default_race.get()
+        chosen_race = tk.StringVar(root)
+        chosen_race.set(races[8])
+        raceMenu = tk.OptionMenu(root, chosen_race, *races, command=getRace)
         
-        def test_race():
-            output.config(text = ("race is " + char_race))
+        #get Class
+        def getClass(choice):
+            choice = chosen_class.get()
+            info["class"] = str(choice)
+
         #choose Class
         class_prompt = tk.Label(root, text = "Character Class: ")
-        default_class = tk.StringVar(root)
-        default_class.set(classes[0])
-        classMenu = tk.OptionMenu(root, default_class, *classes)
-        char_class = default_class.get()
+        chosen_class = tk.StringVar(root)
+        chosen_class.set(classes[0])
+        classMenu = tk.OptionMenu(root, chosen_class, *classes, command=getClass)
         
-        def test_class():
-            output.config(text = ("race is " + char_class))
-
         seperator = tk.Label(root, text = "-------------------------------------------")
+
+        #TODO: optionMenu should reduce the next option menu size, maybe use a Ticker with Integers
+        #functions that get Ability Scores
+        def removeStrScore(choice):
+            choice = chosen_str.get()
+            stats["Str"] = int(choice)
+            #current_scores.remove(int(choice))        
+        def removeConstScore(choice):
+            choice = chosen_const.get()
+            stats["Const"] = int(choice)
+            #current_scores.remove(int(choice))
+        def removeDexScore(choice):
+            choice = chosen_dex.get()
+            stats["Dex"] = int(choice)
+            #current_scores.remove(int(choice))
+        def removeIntScore(choice):
+            choice = chosen_int.get()
+            stats["Int"] = int(choice)
+            #current_scores.remove(int(choice))
+        def removeWisScore(choice):
+            choice = chosen_wis.get()
+            stats["Wis"] = int(choice)
+            #current_scores.remove(int(choice))
+        def removeChaScore(choice):
+            choice = chosen_cha.get()
+            stats["Cha"] = int(choice)
+            #current_scores.remove(int(choice))
 
         #choose Ability Scores
         current_scores = copy.deepcopy(ability_scores)
         str_label = tk.Label(root, text = "Strength - Str")
-        chosen_str = tk.StringVar(root)
-        statMenu = tk.OptionMenu(root, chosen_str, *current_scores)
-        stats["Str"] = chosen_str.get()
+        chosen_str = tk.IntVar(root)
+        statMenu = tk.OptionMenu(root, chosen_str, *current_scores, command=removeStrScore)
         const_label = tk.Label(root, text = "Constitution - Const")
-        chosen_const = tk.StringVar(root)
-        statMenu1 = tk.OptionMenu(root, chosen_const, *current_scores)
-        stats["Const"] = chosen_const.get()
+        chosen_const = tk.IntVar(root)
+        statMenu1 = tk.OptionMenu(root, chosen_const, *current_scores, command=removeConstScore)
         dex_label = tk.Label(root, text = "Dexterity - Dex")
-        chosen_dex = tk.StringVar(root)
-        statMenu2 = tk.OptionMenu(root, chosen_dex, *current_scores)
-        stats["Dex"] = chosen_dex.get()
+        chosen_dex = tk.IntVar(root)
+        statMenu2 = tk.OptionMenu(root, chosen_dex, *current_scores, command=removeDexScore)
         int_label = tk.Label(root, text = "Intelligence - Int")
-        chosen_int = tk.StringVar(root)
-        statMenu3 = tk.OptionMenu(root, chosen_int, *current_scores)
-        stats["Int"] = chosen_int.get()
+        chosen_int = tk.IntVar(root)
+        statMenu3 = tk.OptionMenu(root, chosen_int, *current_scores, command=removeIntScore)
         wis_label = tk.Label(root, text = "Wisdom - Wis")
-        chosen_wis = tk.StringVar(root)
-        statMenu4 = tk.OptionMenu(root, chosen_wis, *current_scores)
-        stats["Wis"] = chosen_wis.get()        
+        chosen_wis = tk.IntVar(root)
+        statMenu4 = tk.OptionMenu(root, chosen_wis, *current_scores, command=removeWisScore)
         cha_label = tk.Label(root, text = "Charisma - Cha")
-        chosen_cha = tk.StringVar(root)
-        statMenu5 = tk.OptionMenu(root, chosen_cha, *current_scores)
-        stats["Cha"] = chosen_cha.get()
+        chosen_cha = tk.IntVar(root)
+        statMenu5 = tk.OptionMenu(root, chosen_cha, *current_scores, command=removeChaScore)
+        
+
 
         seperator1 = tk.Label(root, text = "-------------------------------------------")
 
-        def removeStrScore():
-            current_scores.remove(chosen_str.get())
-        def removeConstScore():
-            current_scores.remove(chosen_const.get())
-        def removeDexScore():
-            current_scores.remove(chosen_dex.get())
-        def removeIntScore():
-            current_scores.remove(chosen_int.get())
-        def removeWisScore():
-            current_scores.remove(chosen_wis.get())
-        def removeChaScore():
-            current_scores.remove(chosen_cha.get())
             
 
         #blocks Input & generateButton after first use.
@@ -955,11 +971,63 @@ def generateMainMenu():
                 name_input['state'] = "normal"
                 displayButton['state'] = "normal"
 
-        #takes name input
+        #takes name input, generates the rest
         def Take_Input():
-            name = name_input.get()
-            print(name)
-            sheetOutput = generateSheet(name)
+            info["name"] = name_input.get()
+            str_character_abilities = ""
+            str_character_modifiers = ""
+
+            for x in stats:
+                str_character_abilities += " - " + x + ": " + str(stats[x]) + "\n"
+                
+            #TODO: get bonuses from Race
+
+            #TODO: get bonuses & items from Class
+
+            def mod_getter(stat):
+                ability_value = stats.get(stat)
+                ability_mod_name = stat + ".mod"
+                if ability_value == 10 or ability_value == 11:
+                    stat_mods[ability_mod_name] = 0
+                elif ability_value == 12 or ability_value == 13:
+                    stat_mods[ability_mod_name] = 1
+                elif ability_value == 14 or ability_value == 15:
+                    stat_mods[ability_mod_name] = 2
+                elif ability_value == 16 or ability_value == 17:
+                    stat_mods[ability_mod_name] = 3
+                elif ability_value == 18 or ability_value == 19:
+                    stat_mods[ability_mod_name] = 4
+            for x in stats:
+                mod_getter(x)
+            for x in stat_mods:
+                str_character_modifiers += " - " + x + ": +" + str(stat_mods[x]) + "\n"
+
+            sheetOutput = str(
+            "Basic Information------------------------------------------\n" +
+            "  -  " + info["name"] + "  -  " + info["race"] + "  -  " + info["class"] + "\n" +
+            #" Speed : " + str(speed) + "\n"  +
+            "Ability Scores----------------------------------------------\n" +
+            str_character_abilities 
+            +
+            "Ability Modifiers--------------------\n" +
+            str_character_modifiers 
+            #+
+            #"Defenses----------------------------------------------------\n" 
+            #+
+            #str_character_defenses +
+            #"Health------------------------------------------------------\n" +
+            #" Max HP : " + str(maxHP) + "\n" +
+            #" Bloodied value : " + str(bloodied_value) + "\n" +
+            #" Surge value : " + str(surge_value) + "\n" +
+            #" Surges per day : " + str(surge_day) + "\n" +
+            #"Skills------------------------------------------------------\n" +
+            #str_character_skills +
+            #"Languages---------------------------------------------------\n" +
+            #" " + str(languages_known) + "\n" +
+            #"Items---------------------------------------------------------\n" +
+            #" - " + weapon + "\n" + " - " + armor + "\n" + " - " + other + "\n" +
+            #"-----------------------------------------------------------------"
+            )
             output.config(text=sheetOutput) 
 
         #reset
